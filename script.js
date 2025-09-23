@@ -10,9 +10,9 @@ const sampleElections = [
         endDate: "2025-01-20T17:00",
         status: "active",
         candidates: [
-            { id: 1, name: "John Smith", department: "CS", votes: 0 },
-            { id: 2, name: "Sarah Johnson", department: "IT", votes: 0 },
-            { id: 3, name: "Michael Brown", department: "ECE", votes: 0 }
+            { id: 1, name: "Gayathri", department: "CS", votes: 0 },
+            { id: 2, name: "Rupa", department: "IT", votes: 0 },
+            { id: 3, name: "Theema", department: "ECE", votes: 0 }
         ],
         totalVoters: 1500,
         voted: []
@@ -27,8 +27,8 @@ const sampleElections = [
         endDate: "2025-01-15T16:00",
         status: "finished",
         candidates: [
-            { id: 1, name: "Alex Chen", department: "CS", votes: 45 },
-            { id: 2, name: "Priya Patel", department: "CS", votes: 38 }
+            { id: 1, name: "Priya Dharshini", department: "CS", votes: 45 },
+            { id: 2, name: "Pavithra", department: "CS", votes: 38 }
         ],
         totalVoters: 85,
         voted: ["student1", "student2"]
@@ -43,8 +43,8 @@ const sampleElections = [
         endDate: "2025-02-05T17:00",
         status: "upcoming",
         candidates: [
-            { id: 1, name: "Rahul Sharma", department: "ME", votes: 0 },
-            { id: 2, name: "Sneha Gupta", department: "IT", votes: 0 }
+            { id: 1, name: "Kathija", department: "ME", votes: 0 },
+            { id: 2, name: "Haarshika", department: "IT", votes: 0 }
         ],
         totalVoters: 2000,
         voted: []
@@ -647,4 +647,5 @@ function showAdminView() {
 
 function showFAQView() {
     alert('FAQ view would be shown here');
+
 }
