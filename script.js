@@ -1,651 +1,2166 @@
-// Sample data for demonstration
-const sampleElections = [
+/* =========================================================
+   CAMPUSVOTE - SMVEC ELECTION SYSTEM
+   JavaScript
+   ========================================================= */
+
+
+/* =========================================================
+   GLOBAL DATA
+   ========================================================= */
+
+let currentUser = null;
+let selectedCandidate = null;
+let selectedPollOption = null;
+let currentElection = null;
+
+
+/* =========================================================
+   SAMPLE ELECTION DATA
+   ========================================================= */
+
+const elections = [
     {
         id: 1,
         title: "Student Council President Election",
-        description: "Vote for the next Student Council President who will represent student interests for the 2025 academic year.",
+        description: "Election for the Student Council President.",
         position: "President",
-        department: "",
-        startDate: "2025-01-15T08:00",
-        endDate: "2025-01-20T17:00",
+        department: "All Departments",
+        startDate: "2026-09-01",
+        endDate: "2026-09-10",
         status: "active",
+
         candidates: [
-            { id: 1, name: "Gayathri", department: "CS", votes: 0 },
-            { id: 2, name: "Rupa", department: "IT", votes: 0 },
-            { id: 3, name: "Theema", department: "ECE", votes: 0 }
-        ],
-        totalVoters: 1500,
-        voted: []
+            {
+                id: 1,
+                name: "Candidate A",
+                department: "CSE",
+                symbol: "★"
+            },
+            {
+                id: 2,
+                name: "Candidate B",
+                department: "ECE",
+                symbol: "◆"
+            },
+            {
+                id: 3,
+                name: "Candidate C",
+                department: "IT",
+                symbol: "●"
+            }
+        ]
     },
+
     {
         id: 2,
-        title: "Computer Science Department Representative",
-        description: "Elect your representative for the Computer Science Department.",
-        position: "Department Representative",
-        department: "CS",
-        startDate: "2025-01-10T09:00",
-        endDate: "2025-01-15T16:00",
-        status: "finished",
-        candidates: [
-            { id: 1, name: "Priya Dharshini", department: "CS", votes: 45 },
-            { id: 2, name: "Pavithra", department: "CS", votes: 38 }
-        ],
-        totalVoters: 85,
-        voted: ["student1", "student2"]
-    },
-    {
-        id: 3,
-        title: "Cultural Committee Head Election",
-        description: "Elect the head of Cultural Committee for organizing college events.",
-        position: "Cultural Committee Head",
-        department: "",
-        startDate: "2025-02-01T09:00",
-        endDate: "2025-02-05T17:00",
+        title: "Sports Secretary Election",
+        description: "Election for the Sports Secretary.",
+        position: "Sports Secretary",
+        department: "All Departments",
+        startDate: "2026-09-15",
+        endDate: "2026-09-20",
         status: "upcoming",
+
         candidates: [
-            { id: 1, name: "Kathija", department: "ME", votes: 0 },
-            { id: 2, name: "Haarshika", department: "IT", votes: 0 }
-        ],
-        totalVoters: 2000,
-        voted: []
+            {
+                id: 4,
+                name: "Candidate D",
+                department: "ME",
+                symbol: "▲"
+            },
+            {
+                id: 5,
+                name: "Candidate E",
+                department: "ECE",
+                symbol: "■"
+            }
+        ]
     }
 ];
 
-const sampleAnnouncements = [
-    {
-        title: "New Election Posted",
-        content: "The Student Council President election is now open for voting until January 20th.",
-        date: "2025-01-15"
-    },
-    {
-        title: "System Maintenance",
-        content: "The voting system will be unavailable on January 25th from 2:00 AM to 4:00 AM for maintenance.",
-        date: "2025-01-10"
-    },
-    {
-        title: "Voting Results Available",
-        content: "Results for the Department Representative elections are now available to view.",
-        date: "2025-01-16"
-    }
+
+/* =========================================================
+   SAMPLE POLL
+   ========================================================= */
+
+const pollOptions = [
+    "Candidate A",
+    "Candidate B",
+    "Candidate C"
 ];
 
-const samplePoll = {
-    question: "Favorite Campus Event",
-    options: [
-        { id: 1, text: "Tech Fest", votes: 0 },
-        { id: 2, text: "Cultural Festival", votes: 0 },
-        { id: 3, text: "Sports Day", votes: 0 },
-        { id: 4, text: "Science Fair", votes: 0 }
-    ]
-};
 
-// State management
-let currentUser = null;
-let selectedElection = null;
-let selectedCandidate = null;
-let selectedPollOption = null;
+/* =========================================================
+   PAGE LOAD
+   ========================================================= */
 
-// DOM Elements
-const elements = {
-    // User controls
-    userInfo: document.getElementById('userInfo'),
-    userName: document.getElementById('userName'),
-    loginBtn: document.getElementById('loginBtn'),
-    registerBtn: document.getElementById('registerBtn'),
-    logoutBtn: document.getElementById('logoutBtn'),
-    
-    // Navigation
-    navAdmin: document.querySelector('.nav-admin'),
-    
-    // Content sections
-    electionList: document.getElementById('electionList'),
-    pollOptions: document.getElementById('pollOptions'),
-    adminPanel: document.getElementById('adminPanel'),
-    announcementList: document.getElementById('announcementList'),
-    upcomingElections: document.getElementById('upcomingElections'),
-    finishedElections: document.getElementById('finishedElections'),
-    winnersList: document.getElementById('winnersList'),
-    
-    // Modals
-    votingModal: document.getElementById('votingModal'),
-    resultsModal: document.getElementById('resultsModal'),
-    loginModal: document.getElementById('loginModal'),
-    registerModal: document.getElementById('registerModal'),
-    createElectionModal: document.getElementById('createElectionModal'),
-    
-    // Buttons
-    submitVoteBtn: document.getElementById('submitVoteBtn'),
-    submitPollVoteBtn: document.getElementById('submitPollVoteBtn'),
-    createElectionBtn: document.getElementById('createElectionBtn')
-};
+document.addEventListener("DOMContentLoaded", function () {
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-    setupEventListeners();
+    initializeApplication();
+
 });
 
-function initializeApp() {
-    loadElections();
-    loadAnnouncements();
-    loadPoll();
-    loadElectionStatus();
-    loadWinners();
-    checkAuthentication();
+
+/* =========================================================
+   INITIALIZE APPLICATION
+   ========================================================= */
+
+function initializeApplication() {
+
+    setupButtons();
+
+    setupModals();
+
+    setupForms();
+
+    displayElections();
+
+    displayUpcomingElections();
+
+    displayFinishedElections();
+
+    displayWinners();
+
+    displayAnnouncements();
+
+    displayPoll();
+
+    loadSavedUser();
+
 }
 
-function setupEventListeners() {
-    // Navigation
-    document.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', handleNavigation);
+
+/* =========================================================
+   BUTTON SETUP
+   ========================================================= */
+
+function setupButtons() {
+
+    const loginBtn =
+        document.getElementById("loginBtn");
+
+    const registerBtn =
+        document.getElementById("registerBtn");
+
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
+    const createElectionBtn =
+        document.getElementById("createElectionBtn");
+
+    const manageCandidatesBtn =
+        document.getElementById("manageCandidatesBtn");
+
+    const manageVotersBtn =
+        document.getElementById("manageVotersBtn");
+
+    const auditLogBtn =
+        document.getElementById("auditLogBtn");
+
+    const submitVoteBtn =
+        document.getElementById("submitVoteBtn");
+
+    const submitPollVoteBtn =
+        document.getElementById("submitPollVoteBtn");
+
+    const cancelElectionBtn =
+        document.getElementById("cancelElectionBtn");
+
+
+    /* LOGIN */
+
+    if (loginBtn) {
+
+        loginBtn.addEventListener("click", function () {
+
+            openModal("loginModal");
+
+        });
+
+    }
+
+
+    /* REGISTER */
+
+    if (registerBtn) {
+
+        registerBtn.addEventListener("click", function () {
+
+            openModal("registerModal");
+
+        });
+
+    }
+
+
+    /* LOGOUT */
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener("click", function () {
+
+            logoutUser();
+
+        });
+
+    }
+
+
+    /* CREATE ELECTION */
+
+    if (createElectionBtn) {
+
+        createElectionBtn.addEventListener("click", function () {
+
+            if (!currentUser) {
+
+                showNotification(
+                    "Please login as administrator.",
+                    "error"
+                );
+
+                return;
+            }
+
+            openModal("createElectionModal");
+
+        });
+
+    }
+
+
+    /* MANAGE CANDIDATES */
+
+    if (manageCandidatesBtn) {
+
+        manageCandidatesBtn.addEventListener("click", function () {
+
+            showNotification(
+                "Candidate management module will be connected to the backend.",
+                "success"
+            );
+
+        });
+
+    }
+
+
+    /* MANAGE VOTERS */
+
+    if (manageVotersBtn) {
+
+        manageVotersBtn.addEventListener("click", function () {
+
+            showNotification(
+                "Voter management module will be connected to the backend.",
+                "success"
+            );
+
+        });
+
+    }
+
+
+    /* AUDIT LOG */
+
+    if (auditLogBtn) {
+
+        auditLogBtn.addEventListener("click", function () {
+
+            showNotification(
+                "Audit log module will be connected to the backend.",
+                "success"
+            );
+
+        });
+
+    }
+
+
+    /* SUBMIT VOTE */
+
+    if (submitVoteBtn) {
+
+        submitVoteBtn.addEventListener("click", function () {
+
+            submitVote();
+
+        });
+
+    }
+
+
+    /* SUBMIT POLL */
+
+    if (submitPollVoteBtn) {
+
+        submitPollVoteBtn.addEventListener("click", function () {
+
+            submitPollVote();
+
+        });
+
+    }
+
+
+    /* CANCEL ELECTION */
+
+    if (cancelElectionBtn) {
+
+        cancelElectionBtn.addEventListener("click", function () {
+
+            closeModal("createElectionModal");
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   MODAL SETUP
+   ========================================================= */
+
+function setupModals() {
+
+    const closeButtons =
+        document.querySelectorAll(".close");
+
+    closeButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const modal =
+                button.closest(".voting-modal");
+
+            if (modal) {
+
+                modal.style.display = "none";
+
+            }
+
+        });
+
     });
-    
-    // User controls
-    elements.loginBtn.addEventListener('click', () => showModal(elements.loginModal));
-    elements.registerBtn.addEventListener('click', () => showModal(elements.registerModal));
-    elements.logoutBtn.addEventListener('click', handleLogout);
-    
-    // Modal close buttons
-    document.querySelectorAll('.close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', closeModals);
-    });
-    
-    // Forms
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    document.getElementById('registerForm').addEventListener('submit', handleRegister);
-    document.getElementById('createElectionForm').addEventListener('submit', handleCreateElection);
-    
-    // Voting
-    elements.submitVoteBtn.addEventListener('click', handleVoteSubmit);
-    elements.submitPollVoteBtn.addEventListener('click', handlePollVoteSubmit);
-    
-    // Admin buttons
-    elements.createElectionBtn.addEventListener('click', () => showModal(elements.createElectionModal));
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', (event) => {
-        if (event.target.classList.contains('voting-modal')) {
-            closeModals();
+
+
+    /* Close when clicking outside modal */
+
+    window.addEventListener("click", function (event) {
+
+        if (event.target.classList.contains("voting-modal")) {
+
+            event.target.style.display = "none";
+
         }
+
     });
+
 }
 
-function handleNavigation(e) {
-    e.preventDefault();
-    // Remove active class from all nav items
-    document.querySelectorAll('nav li').forEach(li => li.classList.remove('active'));
-    // Add active class to clicked item
-    e.target.closest('li').classList.add('active');
-    
-    // Handle different navigation items
-    const target = e.target.className.replace('nav-', '');
-    switch(target) {
-        case 'dashboard':
-            // Already on dashboard
-            break;
-        case 'elections':
-            showElectionsView();
-            break;
-        case 'results':
-            showResultsView();
-            break;
-        case 'admin':
-            showAdminView();
-            break;
-        case 'faq':
-            showFAQView();
-            break;
+
+/* =========================================================
+   OPEN MODAL
+   ========================================================= */
+
+function openModal(id) {
+
+    const modal =
+        document.getElementById(id);
+
+    if (modal) {
+
+        modal.style.display = "block";
+
     }
+
 }
 
-function loadElections() {
-    elements.electionList.innerHTML = '';
-    
-    const activeElections = sampleElections.filter(election => election.status === 'active');
-    
-    if (activeElections.length === 0) {
-        elements.electionList.innerHTML = '<div class="election-card"><p>No active elections at the moment. Check back later!</p></div>';
-        return;
+
+/* =========================================================
+   CLOSE MODAL
+   ========================================================= */
+
+function closeModal(id) {
+
+    const modal =
+        document.getElementById(id);
+
+    if (modal) {
+
+        modal.style.display = "none";
+
     }
-    
-    activeElections.forEach(election => {
-        const electionCard = document.createElement('div');
-        electionCard.className = 'election-card';
-        
-        // Check if user is logged in
-        const isLoggedIn = currentUser !== null;
-        const voteButton = isLoggedIn ? 
-            `<button class="vote-btn" onclick="openVotingModal(${election.id})">
-                <i class="fas fa-vote-yea"></i> Vote Now
-            </button>` :
-            `<button class="vote-btn" onclick="showLoginRequired()" disabled>
-                <i class="fas fa-lock"></i> Login to Vote
-            </button>`;
-        
-        electionCard.innerHTML = `
-            <h3>${election.title}</h3>
-            <div class="election-meta">
-                <span><i class="fas fa-briefcase"></i> ${election.position}</span>
-                <span><i class="fas fa-calendar"></i> Ends: ${formatDate(election.endDate)}</span>
-                ${election.department ? `<span><i class="fas fa-building"></i> ${election.department} Department</span>` : ''}
-            </div>
-            <p>${election.description}</p>
-            ${voteButton}
-        `;
-        elements.electionList.appendChild(electionCard);
-    });
-    
-    // Add login required message if user is not logged in
-    if (!currentUser) {
-        const loginMessage = document.createElement('div');
-        loginMessage.className = 'login-required-message';
-        loginMessage.innerHTML = `
-            <h4><i class="fas fa-exclamation-triangle"></i> Authentication Required</h4>
-            <p>Please register and login to participate in elections and polls.</p>
-            <div class="login-required-buttons">
-                <button class="submit-vote-btn" onclick="showModal(elements.registerModal)">
-                    <i class="fas fa-user-plus"></i> Register Now
-                </button>
-                <button class="submit-vote-btn" onclick="showModal(elements.loginModal)">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-            </div>
-        `;
-        elements.electionList.parentNode.insertBefore(loginMessage, elements.electionList);
-    }
+
 }
 
-function loadElectionStatus() {
-    // Upcoming elections
-    const upcomingElections = sampleElections.filter(election => election.status === 'upcoming');
-    elements.upcomingElections.innerHTML = '';
-    
-    if (upcomingElections.length === 0) {
-        elements.upcomingElections.innerHTML = '<div class="status-item"><p>No upcoming elections scheduled.</p></div>';
-    } else {
-        upcomingElections.forEach(election => {
-            const statusItem = document.createElement('div');
-            statusItem.className = 'status-item';
-            statusItem.innerHTML = `
-                <h4>${election.title}</h4>
-                <p><i class="fas fa-calendar"></i> Starts: ${formatDate(election.startDate)}</p>
-                <p><i class="fas fa-briefcase"></i> ${election.position}</p>
-            `;
-            elements.upcomingElections.appendChild(statusItem);
-        });
-    }
-    
-    // Finished elections
-    const finishedElections = sampleElections.filter(election => election.status === 'finished');
-    elements.finishedElections.innerHTML = '';
-    
-    if (finishedElections.length === 0) {
-        elements.finishedElections.innerHTML = '<div class="status-item"><p>No finished elections to display.</p></div>';
-    } else {
-        finishedElections.forEach(election => {
-            const statusItem = document.createElement('div');
-            statusItem.className = 'status-item';
-            statusItem.innerHTML = `
-                <h4>${election.title}</h4>
-                <p><i class="fas fa-briefcase"></i> ${election.position}</p>
-                <p><i class="fas fa-users"></i> ${election.voted.length} votes cast</p>
-            `;
-            elements.finishedElections.appendChild(statusItem);
-        });
-    }
-}
 
-function loadWinners() {
-    elements.winnersList.innerHTML = '';
-    
-    const finishedElections = sampleElections.filter(election => election.status === 'finished');
-    
-    if (finishedElections.length === 0) {
-        elements.winnersList.innerHTML = '<div class="winner-item"><p>No winners to display yet.</p></div>';
-        return;
-    }
-    
-    finishedElections.forEach(election => {
-        // Find winner (candidate with most votes)
-        const winner = election.candidates.reduce((prev, current) => 
-            (prev.votes > current.votes) ? prev : current
+/* =========================================================
+   FORM SETUP
+   ========================================================= */
+
+function setupForms() {
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const registerForm =
+        document.getElementById("registerForm");
+
+    const createElectionForm =
+        document.getElementById("createElectionForm");
+
+
+    /* LOGIN FORM */
+
+    if (loginForm) {
+
+        loginForm.addEventListener(
+            "submit",
+            handleLogin
         );
-        
-        const winnerItem = document.createElement('div');
-        winnerItem.className = 'winner-item';
-        winnerItem.innerHTML = `
-            <h4>${election.position}</h4>
-            <p><strong>Winner:</strong> ${winner.name}</p>
-            <p><strong>Department:</strong> ${winner.department}</p>
-            <p><strong>Votes:</strong> ${winner.votes}</p>
-        `;
-        elements.winnersList.appendChild(winnerItem);
-    });
-}
 
-function loadAnnouncements() {
-    elements.announcementList.innerHTML = '';
-    
-    sampleAnnouncements.forEach(announcement => {
-        const announcementElement = document.createElement('div');
-        announcementElement.className = 'announcement';
-        announcementElement.innerHTML = `
-            <h4>${announcement.title}</h4>
-            <p>${announcement.content}</p>
-            <small><i class="fas fa-calendar"></i> Posted on: ${announcement.date}</small>
-        `;
-        elements.announcementList.appendChild(announcementElement);
-    });
-}
-
-function loadPoll() {
-    elements.pollOptions.innerHTML = '';
-    
-    const isLoggedIn = currentUser !== null;
-    
-    samplePoll.options.forEach(option => {
-        const optionElement = document.createElement('div');
-        optionElement.className = 'poll-option';
-        if (!isLoggedIn) {
-            optionElement.style.cursor = 'not-allowed';
-            optionElement.style.opacity = '0.6';
-        }
-        optionElement.innerHTML = `
-            <input type="radio" name="pollOption" value="${option.id}" 
-                   onchange="${isLoggedIn ? `selectPollOption(${option.id})` : 'showLoginRequired()'}" 
-                   ${!isLoggedIn ? 'disabled' : ''}>
-            <label>${option.text}</label>
-        `;
-        elements.pollOptions.appendChild(optionElement);
-    });
-    
-    // Update poll submit button
-    elements.submitPollVoteBtn.disabled = !isLoggedIn;
-    if (!isLoggedIn) {
-        elements.submitPollVoteBtn.innerHTML = '<i class="fas fa-lock"></i> Login to Vote';
-        elements.submitPollVoteBtn.onclick = showLoginRequired;
-    } else {
-        elements.submitPollVoteBtn.innerHTML = '<i class="fas fa-check-circle"></i> Submit Poll Vote';
-        elements.submitPollVoteBtn.onclick = handlePollVoteSubmit;
     }
+
+
+    /* REGISTER FORM */
+
+    if (registerForm) {
+
+        registerForm.addEventListener(
+            "submit",
+            handleRegistration
+        );
+
+    }
+
+
+    /* CREATE ELECTION FORM */
+
+    if (createElectionForm) {
+
+        createElectionForm.addEventListener(
+            "submit",
+            handleCreateElection
+        );
+
+    }
+
 }
 
-function openVotingModal(electionId) {
-    if (!currentUser) {
-        showLoginRequired();
+
+/* =========================================================
+   REGISTRATION
+   ========================================================= */
+
+function handleRegistration(event) {
+
+    event.preventDefault();
+
+
+    const name =
+        document.getElementById("regName").value.trim();
+
+    const studentId =
+        document.getElementById("regStudentId").value
+        .trim()
+        .toUpperCase();
+
+    const email =
+        document.getElementById("regEmail").value
+        .trim()
+        .toLowerCase();
+
+    const mobile =
+        document.getElementById("regMobile").value.trim();
+
+    const department =
+        document.getElementById("regDepartment").value;
+
+    const password =
+        document.getElementById("regPassword").value;
+
+    const confirmPassword =
+        document.getElementById("regConfirmPassword").value;
+
+
+    /* CHECK EMPTY VALUES */
+
+    if (
+        !name ||
+        !studentId ||
+        !email ||
+        !mobile ||
+        !department ||
+        !password ||
+        !confirmPassword
+    ) {
+
+        showNotification(
+            "Please fill all required fields.",
+            "error"
+        );
+
         return;
     }
-    
-    selectedElection = sampleElections.find(e => e.id === electionId);
-    selectedCandidate = null;
-    
-    if (!selectedElection) return;
-    
-    document.getElementById('electionDescription').textContent = selectedElection.description;
-    
-    const candidateList = document.getElementById('candidateList');
-    candidateList.innerHTML = '';
-    
-    selectedElection.candidates.forEach(candidate => {
-        const candidateOption = document.createElement('div');
-        candidateOption.className = 'candidate-option';
-        candidateOption.innerHTML = `
-            <h4>${candidate.name}</h4>
-            <p><i class="fas fa-building"></i> Department: ${candidate.department}</p>
-        `;
-        candidateOption.addEventListener('click', () => selectCandidate(candidate.id, candidateOption));
-        candidateList.appendChild(candidateOption);
-    });
-    
-    elements.submitVoteBtn.disabled = true;
-    showModal(elements.votingModal);
-}
 
-function selectCandidate(candidateId, element) {
-    if (!currentUser) {
-        showLoginRequired();
+
+    /* MOBILE VALIDATION */
+
+    const mobilePattern =
+        /^[6-9][0-9]{9}$/;
+
+    if (!mobilePattern.test(mobile)) {
+
+        showNotification(
+            "Enter a valid 10-digit Indian mobile number.",
+            "error"
+        );
+
         return;
     }
-    
-    selectedCandidate = candidateId;
-    
-    // Remove selected class from all options
-    document.querySelectorAll('.candidate-option').forEach(opt => {
-        opt.classList.remove('selected');
-    });
-    
-    // Add selected class to clicked option
-    element.classList.add('selected');
-    
-    // Enable submit button
-    elements.submitVoteBtn.disabled = false;
-}
 
-function selectPollOption(optionId) {
-    if (!currentUser) {
-        showLoginRequired();
+
+    /* EMAIL VALIDATION */
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+
+        showNotification(
+            "Please enter a valid email address.",
+            "error"
+        );
+
         return;
     }
-    
-    selectedPollOption = optionId;
-}
 
-function handleVoteSubmit() {
-    if (!currentUser) {
-        showLoginRequired();
+
+    /* PASSWORD LENGTH */
+
+    if (password.length < 8) {
+
+        showNotification(
+            "Password must contain at least 8 characters.",
+            "error"
+        );
+
         return;
     }
-    
-    if (!selectedCandidate || !selectedElection) return;
-    
-    // Find the selected candidate
-    const candidate = selectedElection.candidates.find(c => c.id === selectedCandidate);
-    
-    if (!candidate) return;
-    
-    // Record the vote
-    candidate.votes++;
-    selectedElection.voted.push(currentUser.name);
-    
-    // Show success notification with candidate name
-    showNotification(`Successfully voted for ${candidate.name} in "${selectedElection.title}"`, 'success');
-    
-    closeModals();
-    
-    // Disable voting for this election
-    const voteBtn = document.querySelector(`.election-card button[onclick="openVotingModal(${selectedElection.id})"]`);
-    if (voteBtn) {
-        voteBtn.disabled = true;
-        voteBtn.innerHTML = '<i class="fas fa-check"></i> Vote Submitted';
-        voteBtn.style.background = '#4caf50';
-    }
-    
-    // Refresh winners list
-    loadWinners();
-}
 
-function handlePollVoteSubmit() {
-    if (!currentUser) {
-        showLoginRequired();
-        return;
-    }
-    
-    if (!selectedPollOption) {
-        showNotification('Please select an option before voting.', 'error');
-        return;
-    }
-    
-    // Update poll results
-    const option = samplePoll.options.find(opt => opt.id === selectedPollOption);
-    if (option) {
-        option.votes++;
-        showNotification(`Poll vote submitted for "${option.text}"!`, 'success');
-    }
-    
-    selectedPollOption = null;
-    
-    // Clear selection
-    document.querySelectorAll('input[name="pollOption"]').forEach(radio => {
-        radio.checked = false;
-    });
-}
 
-function showLoginRequired() {
-    showNotification('Please register and login to participate in voting.', 'warning');
-    showModal(elements.loginModal);
-}
+    /* PASSWORD MATCH */
 
-function handleLogin(e) {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    // Simple authentication (in real app, this would be server-side)
-    if (username && password) {
-        currentUser = {
-            name: username === 'admin' ? 'Administrator' : 'Student User',
-            isAdmin: username === 'admin',
-            studentId: username === 'admin' ? 'ADMIN001' : '23UEC047'
-        };
-        
-        checkAuthentication();
-        closeModals();
-        showNotification('Login successful! You can now participate in voting.', 'success');
-        
-        // Reload elections and poll to update voting buttons
-        loadElections();
-        loadPoll();
-    } else {
-        showNotification('Please enter both username and password.', 'error');
-    }
-}
-
-function handleRegister(e) {
-    e.preventDefault();
-    const password = document.getElementById('regPassword').value;
-    const confirmPassword = document.getElementById('regConfirmPassword').value;
-    
     if (password !== confirmPassword) {
-        showNotification('Passwords do not match!', 'error');
+
+        showNotification(
+            "Password and Confirm Password do not match.",
+            "error"
+        );
+
         return;
     }
-    
-    // In a real application, this would send registration data to the server
-    showNotification('Successfully registered! Please login to participate in voting.', 'success');
-    closeModals();
-    
-    // Clear form
-    document.getElementById('registerForm').reset();
-    
-    // Show login modal after successful registration
-    setTimeout(() => {
-        showModal(elements.loginModal);
-    }, 1000);
-}
 
-function handleCreateElection(e) {
-    e.preventDefault();
-    
-    // In a real application, this would send the election data to the server
-    showNotification('Election created successfully!', 'success');
-    closeModals();
-    
-    // Clear form
-    document.getElementById('createElectionForm').reset();
-}
 
-function handleLogout() {
-    currentUser = null;
-    checkAuthentication();
-    showNotification('Logged out successfully!', 'success');
-    
-    // Reload elections and poll to update voting buttons
-    loadElections();
-    loadPoll();
-}
+    /*
+     * IMPORTANT:
+     *
+     * This localStorage check is only for demonstration.
+     *
+     * Real security MUST be implemented in the backend/database.
+     */
 
-function checkAuthentication() {
-    if (currentUser) {
-        elements.userInfo.style.display = 'flex';
-        elements.userName.textContent = currentUser.name;
-        elements.loginBtn.style.display = 'none';
-        elements.registerBtn.style.display = 'none';
-        elements.logoutBtn.style.display = 'block';
-        
-        // Show admin panel if user is admin
-        if (currentUser.isAdmin) {
-            elements.navAdmin.style.display = 'block';
-            elements.adminPanel.style.display = 'block';
-        } else {
-            elements.navAdmin.style.display = 'none';
-            elements.adminPanel.style.display = 'none';
-        }
-    } else {
-        elements.userInfo.style.display = 'none';
-        elements.loginBtn.style.display = 'block';
-        elements.registerBtn.style.display = 'block';
-        elements.logoutBtn.style.display = 'none';
-        elements.navAdmin.style.display = 'none';
-        elements.adminPanel.style.display = 'none';
+    let users =
+        JSON.parse(
+            localStorage.getItem("campusVoteUsers")
+        ) || [];
+
+
+    /* CHECK STUDENT ID */
+
+    const studentExists =
+        users.some(function (user) {
+
+            return user.studentId === studentId;
+
+        });
+
+    if (studentExists) {
+
+        showNotification(
+            "This Student ID is already registered.",
+            "error"
+        );
+
+        return;
     }
+
+
+    /* CHECK EMAIL */
+
+    const emailExists =
+        users.some(function (user) {
+
+            return user.email === email;
+
+        });
+
+    if (emailExists) {
+
+        showNotification(
+            "This email address is already registered.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /* CHECK MOBILE */
+
+    const mobileExists =
+        users.some(function (user) {
+
+            return user.mobile === mobile;
+
+        });
+
+    if (mobileExists) {
+
+        showNotification(
+            "This mobile number is already registered.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+     * CREATE USER
+     *
+     * WARNING:
+     * Do NOT use this localStorage approach
+     * for a real production voting system.
+     */
+
+    const newUser = {
+
+        name: name,
+
+        studentId: studentId,
+
+        email: email,
+
+        mobile: mobile,
+
+        department: department,
+
+        password: password,
+
+        role: "voter",
+
+        registeredAt:
+            new Date().toISOString()
+
+    };
+
+
+    users.push(newUser);
+
+
+    localStorage.setItem(
+        "campusVoteUsers",
+        JSON.stringify(users)
+    );
+
+
+    showNotification(
+        "Registration successful!",
+        "success"
+    );
+
+
+    document.getElementById(
+        "registerForm"
+    ).reset();
+
+
+    closeModal("registerModal");
+
 }
 
-function showModal(modal) {
-    modal.style.display = 'block';
-    // Scroll to top when modal opens
-    modal.scrollTop = 0;
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+function handleLogin(event) {
+
+    event.preventDefault();
+
+
+    const username =
+        document.getElementById("username").value
+        .trim()
+        .toLowerCase();
+
+    const password =
+        document.getElementById("password").value;
+
+
+    if (!username || !password) {
+
+        showNotification(
+            "Please enter login details.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    let users =
+        JSON.parse(
+            localStorage.getItem("campusVoteUsers")
+        ) || [];
+
+
+    /*
+     * Demo admin account.
+     *
+     * For production, admin authentication
+     * must be handled securely on the server.
+     */
+
+    if (
+        username === "admin" &&
+        password === "Admin@123"
+    ) {
+
+        currentUser = {
+
+            name: "Administrator",
+
+            studentId: "ADMIN",
+
+            email: "admin@smvec.ac.in",
+
+            role: "admin"
+
+        };
+
+
+        saveCurrentUser();
+
+        updateUserInterface();
+
+        closeModal("loginModal");
+
+        showNotification(
+            "Administrator login successful.",
+            "success"
+        );
+
+        return;
+    }
+
+
+    const user =
+        users.find(function (user) {
+
+            return (
+                user.studentId.toLowerCase() === username ||
+                user.email.toLowerCase() === username
+            );
+
+        });
+
+
+    if (!user) {
+
+        showNotification(
+            "Account not found. Please register first.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (user.password !== password) {
+
+        showNotification(
+            "Incorrect password.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    currentUser = user;
+
+
+    saveCurrentUser();
+
+    updateUserInterface();
+
+    closeModal("loginModal");
+
+
+    showNotification(
+        "Login successful. Welcome " +
+        user.name + "!",
+        "success"
+    );
+
 }
 
-function closeModals() {
-    document.querySelectorAll('.voting-modal').forEach(modal => {
-        modal.style.display = 'none';
+
+/* =========================================================
+   SAVE CURRENT USER
+   ========================================================= */
+
+function saveCurrentUser() {
+
+    localStorage.setItem(
+        "campusVoteCurrentUser",
+        JSON.stringify(currentUser)
+    );
+
+}
+
+
+/* =========================================================
+   LOAD SAVED USER
+   ========================================================= */
+
+function loadSavedUser() {
+
+    const savedUser =
+        localStorage.getItem(
+            "campusVoteCurrentUser"
+        );
+
+
+    if (savedUser) {
+
+        currentUser =
+            JSON.parse(savedUser);
+
+        updateUserInterface();
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+function logoutUser() {
+
+    currentUser = null;
+
+    localStorage.removeItem(
+        "campusVoteCurrentUser"
+    );
+
+    updateUserInterface();
+
+
+    showNotification(
+        "You have been logged out.",
+        "success"
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE USER INTERFACE
+   ========================================================= */
+
+function updateUserInterface() {
+
+    const userInfo =
+        document.getElementById("userInfo");
+
+    const userName =
+        document.getElementById("userName");
+
+    const loginBtn =
+        document.getElementById("loginBtn");
+
+    const registerBtn =
+        document.getElementById("registerBtn");
+
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
+    const adminPanel =
+        document.getElementById("adminPanel");
+
+    const adminNav =
+        document.querySelector(".nav-admin");
+
+
+    if (currentUser) {
+
+        if (userInfo) {
+
+            userInfo.style.display = "flex";
+
+        }
+
+        if (userName) {
+
+            userName.textContent =
+                currentUser.name;
+
+        }
+
+        if (loginBtn) {
+
+            loginBtn.style.display = "none";
+
+        }
+
+        if (registerBtn) {
+
+            registerBtn.style.display = "none";
+
+        }
+
+        if (logoutBtn) {
+
+            logoutBtn.style.display = "inline-block";
+
+        }
+
+
+        /* ADMIN */
+
+        if (
+            currentUser.role === "admin"
+        ) {
+
+            if (adminPanel) {
+
+                adminPanel.style.display =
+                    "block";
+
+            }
+
+            if (adminNav) {
+
+                adminNav.style.display =
+                    "block";
+
+            }
+
+        }
+
+    } else {
+
+        if (userInfo) {
+
+            userInfo.style.display = "none";
+
+        }
+
+        if (loginBtn) {
+
+            loginBtn.style.display =
+                "inline-block";
+
+        }
+
+        if (registerBtn) {
+
+            registerBtn.style.display =
+                "inline-block";
+
+        }
+
+        if (logoutBtn) {
+
+            logoutBtn.style.display =
+                "none";
+
+        }
+
+        if (adminPanel) {
+
+            adminPanel.style.display =
+                "none";
+
+        }
+
+        if (adminNav) {
+
+            adminNav.style.display =
+                "none";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPLAY ELECTIONS
+   ========================================================= */
+
+function displayElections() {
+
+    const electionList =
+        document.getElementById(
+            "electionList"
+        );
+
+
+    if (!electionList) {
+        return;
+    }
+
+
+    electionList.innerHTML = "";
+
+
+    const activeElections =
+        elections.filter(function (election) {
+
+            return election.status === "active";
+
+        });
+
+
+    if (activeElections.length === 0) {
+
+        electionList.innerHTML =
+            "<p>No active elections currently.</p>";
+
+        return;
+    }
+
+
+    activeElections.forEach(function (election) {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "election-card";
+
+
+        card.innerHTML = `
+
+            <h3>${escapeHTML(election.title)}</h3>
+
+            <p>
+                <strong>Position:</strong>
+                ${escapeHTML(election.position)}
+            </p>
+
+            <p>
+                ${escapeHTML(election.description)}
+            </p>
+
+            <p>
+                <strong>Department:</strong>
+                ${escapeHTML(election.department)}
+            </p>
+
+            <p>
+                <strong>Voting Period:</strong>
+                ${formatDate(election.startDate)}
+                -
+                ${formatDate(election.endDate)}
+            </p>
+
+            <button
+                class="submit-vote-btn"
+                onclick="openVoting(${election.id})"
+            >
+                <i class="fas fa-vote-yea"></i>
+                Vote Now
+            </button>
+
+            <button
+                class="submit-vote-btn"
+                style="margin-left:8px;"
+                onclick="showResults(${election.id})"
+            >
+                <i class="fas fa-chart-bar"></i>
+                Results
+            </button>
+
+        `;
+
+
+        electionList.appendChild(card);
+
     });
+
 }
+
+
+/* =========================================================
+   OPEN VOTING
+   ========================================================= */
+
+function openVoting(electionId) {
+
+    if (!currentUser) {
+
+        showNotification(
+            "Please login before voting.",
+            "error"
+        );
+
+        openModal("loginModal");
+
+        return;
+    }
+
+
+    currentElection =
+        elections.find(function (election) {
+
+            return election.id === electionId;
+
+        });
+
+
+    if (!currentElection) {
+
+        showNotification(
+            "Election not found.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const description =
+        document.getElementById(
+            "electionDescription"
+        );
+
+
+    if (description) {
+
+        description.textContent =
+            currentElection.description;
+
+    }
+
+
+    displayCandidates();
+
+
+    selectedCandidate = null;
+
+
+    const submitButton =
+        document.getElementById(
+            "submitVoteBtn"
+        );
+
+
+    if (submitButton) {
+
+        submitButton.disabled = true;
+
+    }
+
+
+    openModal("votingModal");
+
+}
+
+
+/* =========================================================
+   DISPLAY CANDIDATES
+   ========================================================= */
+
+function displayCandidates() {
+
+    const candidateList =
+        document.getElementById(
+            "candidateList"
+        );
+
+
+    if (!candidateList || !currentElection) {
+        return;
+    }
+
+
+    candidateList.innerHTML = "";
+
+
+    currentElection.candidates.forEach(
+        function (candidate) {
+
+            const card =
+                document.createElement("label");
+
+            card.className =
+                "candidate-card";
+
+
+            card.innerHTML = `
+
+                <input
+                    type="radio"
+                    name="candidate"
+                    value="${candidate.id}"
+                >
+
+                <div>
+                    <strong>
+                        ${escapeHTML(candidate.name)}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        Department:
+                        ${escapeHTML(candidate.department)}
+                    </small>
+
+                    <br>
+
+                    <small>
+                        Symbol:
+                        ${escapeHTML(candidate.symbol)}
+                    </small>
+                </div>
+
+            `;
+
+
+            const radio =
+                card.querySelector(
+                    "input"
+                );
+
+
+            radio.addEventListener(
+                "change",
+                function () {
+
+                    selectedCandidate =
+                        candidate.id;
+
+
+                    const submitButton =
+                        document.getElementById(
+                            "submitVoteBtn"
+                        );
+
+
+                    if (submitButton) {
+
+                        submitButton.disabled =
+                            false;
+
+                    }
+
+                }
+            );
+
+
+            candidateList.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SUBMIT VOTE
+   ========================================================= */
+
+function submitVote() {
+
+    if (!currentUser) {
+
+        showNotification(
+            "Please login before voting.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!currentElection) {
+
+        showNotification(
+            "No election selected.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!selectedCandidate) {
+
+        showNotification(
+            "Please select a candidate.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+     * Prevent duplicate voting in this browser.
+     *
+     * REAL SECURITY:
+     * Backend/database must enforce
+     * one vote per student per election.
+     */
+
+    const voteKey =
+        "vote_" +
+        currentUser.studentId +
+        "_" +
+        currentElection.id;
+
+
+    if (localStorage.getItem(voteKey)) {
+
+        showNotification(
+            "You have already voted in this election.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    localStorage.setItem(
+        voteKey,
+        JSON.stringify({
+
+            electionId:
+                currentElection.id,
+
+            candidateId:
+                selectedCandidate,
+
+            studentId:
+                currentUser.studentId,
+
+            timestamp:
+                new Date().toISOString()
+
+        })
+    );
+
+
+    showNotification(
+        "Your vote has been recorded successfully.",
+        "success"
+    );
+
+
+    closeModal("votingModal");
+
+}
+
+
+/* =========================================================
+   DISPLAY POLL
+   ========================================================= */
+
+function displayPoll() {
+
+    const pollContainer =
+        document.getElementById(
+            "pollOptions"
+        );
+
+
+    if (!pollContainer) {
+        return;
+    }
+
+
+    pollContainer.innerHTML = "";
+
+
+    pollOptions.forEach(function (option, index) {
+
+        const label =
+            document.createElement("label");
+
+        label.className =
+            "poll-option";
+
+
+        label.innerHTML = `
+
+            <input
+                type="radio"
+                name="pollOption"
+                value="${index}"
+            >
+
+            <span>
+                ${escapeHTML(option)}
+            </span>
+
+        `;
+
+
+        const radio =
+            label.querySelector("input");
+
+
+        radio.addEventListener(
+            "change",
+            function () {
+
+                selectedPollOption =
+                    index;
+
+            }
+        );
+
+
+        pollContainer.appendChild(label);
+
+    });
+
+}
+
+
+/* =========================================================
+   SUBMIT POLL
+   ========================================================= */
+
+function submitPollVote() {
+
+    if (!currentUser) {
+
+        showNotification(
+            "Please login before participating in the poll.",
+            "error"
+        );
+
+        openModal("loginModal");
+
+        return;
+    }
+
+
+    if (
+        selectedPollOption === null
+    ) {
+
+        showNotification(
+            "Please select an option.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const pollKey =
+        "poll_" +
+        currentUser.studentId;
+
+
+    if (localStorage.getItem(pollKey)) {
+
+        showNotification(
+            "You have already participated in this poll.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    localStorage.setItem(
+        pollKey,
+        JSON.stringify({
+
+            option:
+                selectedPollOption,
+
+            studentId:
+                currentUser.studentId,
+
+            timestamp:
+                new Date().toISOString()
+
+        })
+    );
+
+
+    showNotification(
+        "Poll vote submitted successfully.",
+        "success"
+    );
+
+}
+
+
+/* =========================================================
+   UPCOMING ELECTIONS
+   ========================================================= */
+
+function displayUpcomingElections() {
+
+    const container =
+        document.getElementById(
+            "upcomingElections"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    const upcoming =
+        elections.filter(function (election) {
+
+            return election.status === "upcoming";
+
+        });
+
+
+    if (upcoming.length === 0) {
+
+        container.innerHTML =
+            "<p>No upcoming elections.</p>";
+
+        return;
+    }
+
+
+    upcoming.forEach(function (election) {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "status-item";
+
+
+        item.innerHTML = `
+
+            <strong>
+                ${escapeHTML(election.title)}
+            </strong>
+
+            <span>
+                Starts:
+                ${formatDate(election.startDate)}
+            </span>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================================================
+   FINISHED ELECTIONS
+   ========================================================= */
+
+function displayFinishedElections() {
+
+    const container =
+        document.getElementById(
+            "finishedElections"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="status-item">
+
+            <strong>
+                Previous Student Council Election
+            </strong>
+
+            <span>
+                Completed
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   WINNERS
+   ========================================================= */
+
+function displayWinners() {
+
+    const container =
+        document.getElementById(
+            "winnersList"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="winner-item">
+
+            <strong>
+                Student Council President
+            </strong>
+
+            <p>
+                Results will appear after election.
+            </p>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   ANNOUNCEMENTS
+   ========================================================= */
+
+function displayAnnouncements() {
+
+    const container =
+        document.getElementById(
+            "announcementList"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="announcement-item">
+
+            <strong>
+                Election Announcement
+            </strong>
+
+            <p>
+                Please make sure your voter
+                registration details are correct.
+            </p>
+
+        </div>
+
+        <div class="announcement-item">
+
+            <strong>
+                Secure Voting
+            </strong>
+
+            <p>
+                Each registered student can
+                vote only once per election.
+            </p>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   RESULTS
+   ========================================================= */
+
+function showResults(electionId) {
+
+    const election =
+        elections.find(function (item) {
+
+            return item.id === electionId;
+
+        });
+
+
+    if (!election) {
+        return;
+    }
+
+
+    const title =
+        document.getElementById(
+            "resultsTitle"
+        );
+
+    const totalVotes =
+        document.getElementById(
+            "totalVotesStat"
+        );
+
+    const turnout =
+        document.getElementById(
+            "turnoutStat"
+        );
+
+    const container =
+        document.getElementById(
+            "resultsContainer"
+        );
+
+
+    if (title) {
+
+        title.textContent =
+            election.title;
+
+    }
+
+
+    if (totalVotes) {
+
+        totalVotes.textContent =
+            "Total Votes: 0";
+
+    }
+
+
+    if (turnout) {
+
+        turnout.textContent =
+            "Turnout: 0%";
+
+    }
+
+
+    if (container) {
+
+        container.innerHTML = "";
+
+
+        election.candidates.forEach(
+            function (candidate) {
+
+                const result =
+                    document.createElement("div");
+
+                result.className =
+                    "result-item";
+
+
+                result.innerHTML = `
+
+                    <h4>
+                        ${escapeHTML(candidate.name)}
+                    </h4>
+
+                    <div class="result-bar">
+
+                        <div
+                            class="result-bar-fill"
+                            style="width:0%"
+                        ></div>
+
+                    </div>
+
+                    <small>
+                        0 votes
+                    </small>
+
+                `;
+
+
+                container.appendChild(result);
+
+            }
+        );
+
+    }
+
+
+    openModal("resultsModal");
+
+}
+
+
+/* =========================================================
+   CREATE ELECTION
+   ========================================================= */
+
+function handleCreateElection(event) {
+
+    event.preventDefault();
+
+
+    if (
+        !currentUser ||
+        currentUser.role !== "admin"
+    ) {
+
+        showNotification(
+            "Only administrators can create elections.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const title =
+        document.getElementById(
+            "electionTitle"
+        ).value.trim();
+
+
+    const description =
+        document.getElementById(
+            "electionDescriptionInput"
+        ).value.trim();
+
+
+    const position =
+        document.getElementById(
+            "electionPosition"
+        ).value.trim();
+
+
+    const department =
+        document.getElementById(
+            "electionDepartment"
+        ).value;
+
+
+    const startDate =
+        document.getElementById(
+            "startDate"
+        ).value;
+
+
+    const endDate =
+        document.getElementById(
+            "endDate"
+        ).value;
+
+
+    if (
+        !title ||
+        !description ||
+        !position ||
+        !startDate ||
+        !endDate
+    ) {
+
+        showNotification(
+            "Please fill all election details.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        new Date(endDate) <=
+        new Date(startDate)
+    ) {
+
+        showNotification(
+            "End date must be after start date.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const newElection = {
+
+        id:
+            elections.length + 1,
+
+        title:
+            title,
+
+        description:
+            description,
+
+        position:
+            position,
+
+        department:
+            department || "All Departments",
+
+        startDate:
+            startDate,
+
+        endDate:
+            endDate,
+
+        status:
+            "upcoming",
+
+        candidates:
+            []
+
+    };
+
+
+    elections.push(newElection);
+
+
+    showNotification(
+        "Election created successfully.",
+        "success"
+    );
+
+
+    document.getElementById(
+        "createElectionForm"
+    ).reset();
+
+
+    closeModal("createElectionModal");
+
+
+    displayElections();
+
+    displayUpcomingElections();
+
+}
+
+
+/* =========================================================
+   NOTIFICATION
+   ========================================================= */
+
+function showNotification(
+    message,
+    type = "success"
+) {
+
+    const container =
+        document.getElementById(
+            "notificationContainer"
+        );
+
+
+    if (!container) {
+
+        alert(message);
+
+        return;
+
+    }
+
+
+    const notification =
+        document.createElement("div");
+
+    notification.className =
+        "notification " + type;
+
+
+    notification.textContent =
+        message;
+
+
+    container.appendChild(
+        notification
+    );
+
+
+    setTimeout(function () {
+
+        notification.remove();
+
+    }, 4000);
+
+}
+
+
+/* =========================================================
+   FORMAT DATE
+   ========================================================= */
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
 
-function showNotification(message, type = 'success') {
-    const notificationContainer = document.getElementById('notificationContainer');
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                      type === 'error' ? 'fa-exclamation-triangle' : 
-                      'fa-exclamation-circle'}"></i>
-        ${message}
-    `;
-    
-    notificationContainer.appendChild(notification);
-    
-    // Remove notification after 5 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
-}
+    if (!dateString) {
+        return "";
+    }
 
-// Placeholder functions for different views
-function showElectionsView() {
-    alert('Elections view would be shown here');
-}
 
-function showResultsView() {
-    alert('Results view would be shown here');
-}
+    const date =
+        new Date(dateString);
 
-function showAdminView() {
-    alert('Admin view would be shown here');
-}
 
-function showFAQView() {
-    alert('FAQ view would be shown here');
+    if (isNaN(date.getTime())) {
+
+        return dateString;
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
 
 }
+
+
+/* =========================================================
+   HTML SECURITY
+   ========================================================= */
+
+function escapeHTML(value) {
+
+    if (value === null ||
+        value === undefined) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const dashboard =
+            event.target.closest(
+                ".nav-dashboard"
+            );
+
+        const electionsNav =
+            event.target.closest(
+                ".nav-elections"
+            );
+
+        const resultsNav =
+            event.target.closest(
+                ".nav-results"
+            );
+
+        const faqNav =
+            event.target.closest(
+                ".nav-faq"
+            );
+
+
+        if (dashboard) {
+
+            event.preventDefault();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        if (electionsNav) {
+
+            event.preventDefault();
+
+            const section =
+                document.querySelector(
+                    ".elections-container"
+                );
+
+            if (section) {
+
+                section.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+            }
+
+        }
+
+
+        if (resultsNav) {
+
+            event.preventDefault();
+
+            showNotification(
+                "Select an election to view its results.",
+                "success"
+            );
+
+        }
+
+
+        if (faqNav) {
+
+            event.preventDefault();
+
+            showNotification(
+                "FAQ section will be available soon.",
+                "success"
+            );
+
+        }
+
+    }
+);

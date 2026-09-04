@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampusVote - SMVEC Election System</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    >
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ================= HEADER ================= -->
+    <header>
+
+        <div class="college-banner">
+
+            <h1>
+                SRI MANAKULA VINAYAGAR ENGINEERING COLLEGE ELECTION
+            </h1>
+
+            <h2>
+                <i class="fas fa-vote-yea"></i>
+                CampusVote
+            </h2>
+
+        </div>
+
+        <div class="user-controls">
+
+            <div class="user-info" id="userInfo" style="display: none;">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName"></span>
+            </div>
+
+            <button id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </button>
+
+            <button id="registerBtn">
+                <i class="fas fa-user-plus"></i>
+                Register
+            </button>
+
+            <button id="logoutBtn" style="display: none;">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= NAVIGATION ================= -->
+    <nav>
+
+        <ul>
+
+            <li class="active">
+                <a href="#" class="nav-dashboard">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="nav-elections">
+                    <i class="fas fa-vote-yea"></i>
+                    Elections
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="nav-results">
+                    <i class="fas fa-chart-bar"></i>
+                    Results
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="nav-admin" style="display: none;">
+                    <i class="fas fa-user-shield"></i>
+                    Admin
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="nav-faq">
+                    <i class="fas fa-question-circle"></i>
+                    FAQ
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- ================= MAIN ================= -->
+    <main>
+
+        <div class="dashboard-container">
+
+            <!-- ================= MAIN CONTENT ================= -->
+            <div class="main-content">
+
+                <!-- CURRENT ELECTIONS -->
+                <div class="elections-container">
+
+                    <h2>Current Elections</h2>
+
+                    <div
+                        class="election-list"
+                        id="electionList"
+                    >
+                        <!-- Elections loaded dynamically -->
+                    </div>
+
+                </div>
+
+
+                <!-- AUDIENCE POLL -->
+                <div class="poll-container">
+
+                    <h2>Audience Poll</h2>
+
+                    <p>
+                        Vote for your favorite candidate in our ongoing
+                        popularity poll!
+                    </p>
+
+                    <div
+                        class="poll-options"
+                        id="pollOptions"
+                    >
+                        <!-- Poll options loaded dynamically -->
+                    </div>
+
+                    <button
+                        class="submit-vote-btn"
+                        id="submitPollVoteBtn"
+                        style="margin-top: 1.5rem;"
+                    >
+                        <i class="fas fa-check-circle"></i>
+                        Submit Poll Vote
+                    </button>
+
+                </div>
+
+
+                <!-- ================= ADMIN PANEL ================= -->
+                <div
+                    class="admin-panel"
+                    id="adminPanel"
+                    style="display: none;"
+                >
+
+                    <h2>Admin Dashboard</h2>
+
+                    <div class="admin-actions">
+
+                        <button
+                            class="admin-btn"
+                            id="createElectionBtn"
+                        >
+                            <i class="fas fa-plus-circle"></i>
+                            Create Election
+                        </button>
+
+                        <button
+                            class="admin-btn"
+                            id="manageCandidatesBtn"
+                        >
+                            <i class="fas fa-users"></i>
+                            Manage Candidates
+                        </button>
+
+                        <button
+                            class="admin-btn"
+                            id="manageVotersBtn"
+                        >
+                            <i class="fas fa-user-check"></i>
+                            Manage Voters
+                        </button>
+
+                        <button
+                            class="admin-btn"
+                            id="auditLogBtn"
+                        >
+                            <i class="fas fa-clipboard-list"></i>
+                            Audit Log
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= SIDEBAR ================= -->
+            <div class="sidebar">
+
+                <!-- UPCOMING ELECTIONS -->
+                <div class="election-status">
+
+                    <h3>Upcoming Elections</h3>
+
+                    <div
+                        class="status-list"
+                        id="upcomingElections"
+                    >
+                        <!-- Upcoming elections -->
+                    </div>
+
+                </div>
+
+
+                <!-- FINISHED ELECTIONS -->
+                <div class="election-status">
+
+                    <h3>Finished Elections</h3>
+
+                    <div
+                        class="status-list"
+                        id="finishedElections"
+                    >
+                        <!-- Finished elections -->
+                    </div>
+
+                </div>
+
+
+                <!-- WINNERS -->
+                <div class="winners-container">
+
+                    <h3>Recent Winners</h3>
+
+                    <div
+                        class="winners-list"
+                        id="winnersList"
+                    >
+                        <!-- Winners -->
+                    </div>
+
+                </div>
+
+
+                <!-- ANNOUNCEMENTS -->
+                <div class="announcement-container">
+
+                    <h3>Announcements</h3>
+
+                    <div
+                        class="announcement-list"
+                        id="announcementList"
+                    >
+                        <!-- Announcements -->
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+
+        <p>
+            &copy; 2026 Sri Manakula Vinayagar Engineering College -
+            CampusVote Secure Online Voting System.
+            All rights reserved.
+        </p>
+
+    </footer>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================= VOTING MODAL ====================== -->
+<!-- ===================================================== -->
+
+<div
+    id="votingModal"
+    class="voting-modal"
+>
+
+    <div class="voting-modal-content">
+
+        <span class="close">&times;</span>
+
+        <h2>Cast Your Vote</h2>
+
+        <p id="electionDescription"></p>
+
+        <div
+            class="candidate-list"
+            id="candidateList"
+        >
+            <!-- Candidates loaded dynamically -->
+        </div>
+
+        <button
+            class="submit-vote-btn"
+            id="submitVoteBtn"
+            disabled
+        >
+            <i class="fas fa-check-circle"></i>
+            Submit Vote
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================= RESULTS MODAL ===================== -->
+<!-- ===================================================== -->
+
+<div
+    id="resultsModal"
+    class="voting-modal"
+>
+
+    <div class="voting-modal-content results-modal-content">
+
+        <span class="close">&times;</span>
+
+        <div class="results-header">
+
+            <h2
+                class="results-title"
+                id="resultsTitle"
+            ></h2>
+
+            <div class="results-stats">
+
+                <span
+                    class="stat-badge"
+                    id="totalVotesStat"
+                ></span>
+
+                <span
+                    class="stat-badge"
+                    id="turnoutStat"
+                ></span>
+
+            </div>
+
+        </div>
+
+        <div
+            class="results-container"
+            id="resultsContainer"
+        >
+            <!-- Results loaded dynamically -->
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================= LOGIN MODAL ======================= -->
+<!-- ===================================================== -->
+
+<div
+    id="loginModal"
+    class="voting-modal login-register-modal"
+>
+
+    <div class="voting-modal-content">
+
+        <span class="close">&times;</span>
+
+        <h2>Login</h2>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="username">
+                    Student ID or Email
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="submit-vote-btn"
+            >
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================= REGISTER MODAL ==================== -->
+<!-- ===================================================== -->
+
+<div
+    id="registerModal"
+    class="voting-modal login-register-modal"
+>
+
+    <div class="voting-modal-content">
+
+        <span class="close">&times;</span>
+
+        <h2>Register</h2>
+
+        <form id="registerForm">
+
+            <!-- FULL NAME -->
+            <div class="form-group">
+
+                <label for="regName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="regName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    maxlength="100"
+                    required
+                >
+
+            </div>
+
+
+            <!-- STUDENT ID -->
+            <div class="form-group">
+
+                <label for="regStudentId">
+                    Student ID
+                </label>
+
+                <input
+                    type="text"
+                    id="regStudentId"
+                    name="studentId"
+                    placeholder="Enter your Student ID"
+                    maxlength="30"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+            <div class="form-group">
+
+                <label for="regEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="regEmail"
+                    name="email"
+                    placeholder="Enter your college email"
+                    maxlength="255"
+                    required
+                >
+
+            </div>
+
+
+            <!-- MOBILE NUMBER -->
+            <div class="form-group">
+
+                <label for="regMobile">
+                    Mobile Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="regMobile"
+                    name="mobile"
+                    placeholder="Enter 10-digit mobile number"
+                    inputmode="numeric"
+                    maxlength="10"
+                    pattern="[6-9][0-9]{9}"
+                    required
+                >
+
+                <small>
+                    Enter a valid 10-digit Indian mobile number.
+                </small>
+
+            </div>
+
+
+            <!-- DEPARTMENT -->
+            <div class="form-group">
+
+                <label for="regDepartment">
+                    Department
+                </label>
+
+                <select
+                    id="regDepartment"
+                    name="department"
+                    required
+                >
+
+                    <option value="">
+                        Select Department
+                    </option>
+
+                    <option value="CS">
+                        Computer Science
+                    </option>
+
+                    <option value="IT">
+                        Information Technology
+                    </option>
+
+                    <option value="AIDS">
+                        Artificial Intelligence &amp; Data Science
+                    </option>
+
+                    <option value="ECE">
+                        Electronics &amp; Communication
+                    </option>
+
+                    <option value="ME">
+                        Mechanical Engineering
+                    </option>
+
+                    <option value="CE">
+                        Civil Engineering
+                    </option>
+
+                    <option value="EE">
+                        Electrical Engineering
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+            <div class="form-group">
+
+                <label for="regPassword">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="regPassword"
+                    name="password"
+                    placeholder="Minimum 8 characters"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="form-group">
+
+                <label for="regConfirmPassword">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="regConfirmPassword"
+                    name="confirmPassword"
+                    placeholder="Re-enter your password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- SECURITY INFORMATION -->
+            <div class="security-notice">
+
+                <i class="fas fa-shield-alt"></i>
+
+                <span>
+                    Each Student ID, Email and Mobile Number
+                    can be registered only once.
+                </span>
+
+            </div>
+
+
+            <!-- REGISTER BUTTON -->
+            <button
+                type="submit"
+                class="submit-vote-btn"
+            >
+                <i class="fas fa-user-plus"></i>
+                Register
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================ CREATE ELECTION ==================== -->
+<!-- ===================================================== -->
+
+<div
+    id="createElectionModal"
+    class="voting-modal"
+>
+
+    <div class="voting-modal-content">
+
+        <span class="close">&times;</span>
+
+        <h2>Create New Election</h2>
+
+        <form id="createElectionForm">
+
+            <div class="form-group">
+
+                <label for="electionTitle">
+                    Election Title
+                </label>
+
+                <input
+                    type="text"
+                    id="electionTitle"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="electionDescriptionInput">
+                    Description
+                </label>
+
+                <textarea
+                    id="electionDescriptionInput"
+                    rows="3"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="electionPosition">
+                    Position
+                </label>
+
+                <input
+                    type="text"
+                    id="electionPosition"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="electionDepartment">
+                    Department
+                    (Leave blank for all)
+                </label>
+
+                <select id="electionDepartment">
+
+                    <option value="">
+                        All Departments
+                    </option>
+
+                    <option value="CS">
+                        Computer Science
+                    </option>
+
+                    <option value="IT">
+                        Information Technology
+                    </option>
+
+                    <option value="AIDS">
+                        Artificial Intelligence &amp; Data Science
+                    </option>
+
+                    <option value="ECE">
+                        Electronics &amp; Communication
+                    </option>
+
+                    <option value="ME">
+                        Mechanical Engineering
+                    </option>
+
+                    <option value="CE">
+                        Civil Engineering
+                    </option>
+
+                    <option value="EE">
+                        Electrical Engineering
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="startDate">
+                    Start Date &amp; Time
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="startDate"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="endDate">
+                    End Date &amp; Time
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="endDate"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="cancelElectionBtn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Create Election
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================= NOTIFICATIONS ===================== -->
+<!-- ===================================================== -->
+
+<div
+    id="notificationContainer"
+    class="notification-container"
+></div>
+
+
+<!-- ===================================================== -->
+<!-- ================= JAVASCRIPT ======================== -->
+<!-- ===================================================== -->
+
+<script>
+
+    /*
+     * Basic client-side registration validation.
+     *
+     * IMPORTANT:
+     * This does NOT provide database-level security.
+     * The backend/database must also enforce UNIQUE:
+     *
+     * student_id
+     * email
+     * mobile
+     */
+
+    const registerForm =
+        document.getElementById("registerForm");
+
+    if (registerForm) {
+
+        registerForm.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const name =
+                document.getElementById("regName").value.trim();
+
+            const studentId =
+                document.getElementById("regStudentId").value.trim();
+
+            const email =
+                document.getElementById("regEmail").value
+                .trim()
+                .toLowerCase();
+
+            const mobile =
+                document.getElementById("regMobile").value.trim();
+
+            const department =
+                document.getElementById("regDepartment").value;
+
+            const password =
+                document.getElementById("regPassword").value;
+
+            const confirmPassword =
+                document.getElementById("regConfirmPassword").value;
+
+
+            /* Mobile validation */
+
+            const mobilePattern =
+                /^[6-9][0-9]{9}$/;
+
+            if (!mobilePattern.test(mobile)) {
+
+                alert(
+                    "Please enter a valid 10-digit mobile number."
+                );
+
+                return;
+            }
+
+
+            /* Password validation */
+
+            if (password.length < 8) {
+
+                alert(
+                    "Password must contain at least 8 characters."
+                );
+
+                return;
+            }
+
+
+            /* Confirm password */
+
+            if (password !== confirmPassword) {
+
+                alert(
+                    "Password and Confirm Password do not match."
+                );
+
+                return;
+            }
+
+
+            /*
+             * Registration data.
+             *
+             * Connect this object to your backend/API
+             * in script.js.
+             */
+
+            const registrationData = {
+
+                name: name,
+
+                studentId: studentId,
+
+                email: email,
+
+                mobile: mobile,
+
+                department: department,
+
+                password: password
+
+            };
+
+
+            console.log(
+                "Registration data:",
+                registrationData
+            );
+
+
+            alert(
+                "Registration form validated successfully. " +
+                "Connect this form to your secure backend."
+            );
+
+        });
+
+    }
+
+
+    /* Allow only numbers in mobile field */
+
+    const mobileInput =
+        document.getElementById("regMobile");
+
+    if (mobileInput) {
+
+        mobileInput.addEventListener("input", function() {
+
+            this.value =
+                this.value.replace(/[^0-9]/g, "");
+
+        });
+
+    }
+
+</script>
+
+
+<!-- Existing application JavaScript -->
+<script src="script.js"></script>
+
+</body>
+</html>
